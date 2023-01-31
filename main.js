@@ -23,15 +23,56 @@ function loadImage(){
     gameOverImage.src = 'images/gameover.png';
 }
 
+let keysdown = {};
+function setupKeyboardListener(){
+    document.addEventListener('keydown',function(e){
+        keysdown[e.key] = true;
+        console.log(keysdown);
+    });
+    document.addEventListener('keyup',function(e){
+        delete keysdown[e.key];
+    });
+}
+
+function update(){
+    if('ArrowLeft' in keysdown){
+        spaceshipX -= 5;
+    }
+    if('ArrowRight' in keysdown){
+        spaceshipX += 5;
+    }
+    if('ArrowUp' in keysdown){
+        spaceshipY -= 5;
+    }
+    if('ArrowDown' in keysdown){
+        spaceshipY += 5;
+    }
+
+    if (spaceshipX < 0) {
+        spaceshipX = 0;
+    }
+    if (spaceshipX > canvas.width - 64) {
+        spaceshipX = canvas.width - 64;
+    }
+    if (spaceshipY < 0) {
+        spaceshipY = 0;
+    }
+    if (spaceshipY > canvas.height - 64) {
+        spaceshipY = canvas.height - 64;
+    }
+}
+
 function render(){
     ctx.drawImage(backgroundImage,0,0,canvas.width,canvas.height);
     ctx.drawImage(spaceshipImage,spaceshipX,spaceshipY);
 }
 
 function main(){
+    update();
     render();
     requestAnimationFrame(main);
 }
 
 loadImage();
+setupKeyboardListener();
 main();
