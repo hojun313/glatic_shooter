@@ -10,6 +10,14 @@ let backgroundImage,spaceshipImage,enemyImage,bulletImage,gameOverImage;
 let spaceshipX = canvas.width/2 - 32;
 let spaceshipY = canvas.height - 64;
 
+let bullets = [];
+function Bullet(){
+    this.x = spaceshipX + 16;
+    this.y = spaceshipY - 10;
+    bullets.push(this);
+    this.speed = 5;
+}
+
 function loadImage(){
     backgroundImage = new Image();
     backgroundImage.src = 'images/background.jpg';
@@ -31,7 +39,15 @@ function setupKeyboardListener(){
     });
     document.addEventListener('keyup',function(e){
         delete keysdown[e.key];
+        if (e.key == ' ') {
+            createBullet();
+        }
     });
+}
+
+function createBullet() {
+    let bullet = new Bullet();
+    bullets.push(bullet);
 }
 
 function update(){
@@ -65,6 +81,10 @@ function update(){
 function render(){
     ctx.drawImage(backgroundImage,0,0,canvas.width,canvas.height);
     ctx.drawImage(spaceshipImage,spaceshipX,spaceshipY);
+    for (let i = 0; i < bullets.length; i++) {
+        ctx.drawImage(bulletImage,bullets[i].x,bullets[i].y);
+        bullets[i].y -= bullets[i].speed;
+    }
 }
 
 function main(){
