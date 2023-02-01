@@ -7,6 +7,9 @@ canvas.height = 600;
 document.body.appendChild(canvas);
 
 let backgroundImage,spaceshipImage,enemyImage,bulletImage,gameOverImage;
+let gameover = false;
+let score = 0;
+
 let spaceshipX = canvas.width/2 - 32;
 let spaceshipY = canvas.height - 64;
 
@@ -16,6 +19,42 @@ function Bullet(){
     this.y = spaceshipY - 10;
     bullets.push(this);
     this.speed = 5;
+
+    this.checkCollision = function(){
+        for (let i = 0; i < enemies.length; i++) {
+            if (this.x+23 > enemies[i].x && this.x+11 < enemies[i].x + 64 && this.y > enemies[i].y && this.y < enemies[i].y + 64) {
+                enemies.splice(i,1);
+                bullets.splice(bullets.indexOf(this),1);
+                score += 10;
+            }
+        }
+    }
+}
+function createBullet() {
+    let bullet = new Bullet();
+}
+
+function generateRandomValue(min,max){
+    let rNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    return rNum;
+}
+
+let enemies = [];
+function Enemy(){
+    this.x = 0;
+    this.y = 0;
+    this.speed = 1;
+    this.init = function(){
+        this.x = generateRandomValue(0,canvas.width - 64);
+        this.y = 0;
+        enemies.push(this);
+    }
+}
+function createEnemy(){
+    const interval = setInterval(function(){
+        let enemy = new Enemy();
+        enemy.init();
+    },1000);
 }
 
 function loadImage(){
@@ -24,7 +63,7 @@ function loadImage(){
     spaceshipImage = new Image();
     spaceshipImage.src = 'images/ship.png';
     enemyImage = new Image();
-    enemyImage.src = 'images/enemy.png';
+    enemyImage.src = 'images/enemyred.png';
     bulletImage = new Image();
     bulletImage.src = 'images/bullet.png';
     gameOverImage = new Image();
@@ -43,11 +82,6 @@ function setupKeyboardListener(){
             createBullet();
         }
     });
-}
-
-function createBullet() {
-    let bullet = new Bullet();
-    bullets.push(bullet);
 }
 
 function update(){
@@ -76,23 +110,46 @@ function update(){
     if (spaceshipY > canvas.height - 64) {
         spaceshipY = canvas.height - 64;
     }
+    for (let i = 0; i < bullets.length; i++) {
+        if (bullets[i].y >= -32) {
+            bullets[i].checkCollision();
+        }
+        else{
+            bullets.splice(i,1);
+        }
+    }
+    console.log(bullets);
 }
 
 function render(){
     ctx.drawImage(backgroundImage,0,0,canvas.width,canvas.height);
     ctx.drawImage(spaceshipImage,spaceshipX,spaceshipY);
+    ctx.fillText('Score: '+ score,10,20);
+    ctx.fillStyle = 'white';
+    ctx.font = '20px Arial';
     for (let i = 0; i < bullets.length; i++) {
         ctx.drawImage(bulletImage,bullets[i].x,bullets[i].y);
         bullets[i].y -= bullets[i].speed;
     }
+    for (let i = 0; i < enemies.length; i++) {
+        ctx.drawImage(enemyImage,enemies[i].x,enemies[i].y);
+        if (enemies[i].y > canvas.height-64) {
+            gameover = true;
+            ctx.drawImage(gameOverImage,canvas.width/2 - 190, canvas.height/2 - 190, 380, 380);
+        }
+        enemies[i].y += enemies[i].speed;
+    }
 }
 
 function main(){
-    update();
-    render();
-    requestAnimationFrame(main);
+    if (!gameover) {
+        update();
+        render();
+        requestAnimationFrame(main);
+    }
 }
 
 loadImage();
 setupKeyboardListener();
+createEnemy();
 main();
