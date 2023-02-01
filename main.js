@@ -2,8 +2,8 @@ let canvas;
 let ctx;
 canvas = document.createElement('canvas');
 ctx = canvas.getContext('2d');
-canvas.width = 800;
-canvas.height = 600;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 document.body.appendChild(canvas);
 
 let backgroundImage,spaceshipImage,enemyImage,bulletImage,gameOverImage;
