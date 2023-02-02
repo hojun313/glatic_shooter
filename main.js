@@ -14,18 +14,20 @@ let money = 0;
 let spaceshipX = canvas.width/2 - 32;
 let spaceshipY = canvas.height - 64;
 let spaceshipAs = 30;
+let spaceshipHp = 100;
 
 let bullets = [];
 function Bullet(){
-    this.x = spaceshipX + 16;
-    this.y = spaceshipY - 10;
-    bullets.push(this);
     this.speed = 5;
     this.damage = 50;
+    this.size = 32;
+    this.x = spaceshipX + 32 - this.size/2;
+    this.y = spaceshipY - 10;
+    bullets.push(this);
 
     this.checkCollision = function(){
         for (let i = 0; i < enemies.length; i++) {
-            if (this.x+23 > enemies[i].x && this.x+11 < enemies[i].x + 64 && this.y > enemies[i].y && this.y < enemies[i].y + 64) {
+            if (this.x+(23/32)*this.size > enemies[i].x && this.x+(11/32)*this.size < enemies[i].x + 64 && this.y > enemies[i].y && this.y < enemies[i].y + 64) {
                 enemies[i].hp -= this.damage;
                 bullets.splice(bullets.indexOf(this),1);
                 if (enemies[i].hp <= 0) {
@@ -138,10 +140,12 @@ function render(){
     ctx.drawImage(backgroundImage,0,0,canvas.width,canvas.height);
     ctx.drawImage(spaceshipImage,spaceshipX,spaceshipY);
     ctx.fillText('Score: '+ score,10,20);
+    ctx.fillText('Money: '+ money,10,40);
+    ctx.fillText('HP: '+ spaceshipHp,10,60);
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
     for (let i = 0; i < bullets.length; i++) {
-        ctx.drawImage(bulletImage,bullets[i].x,bullets[i].y);
+        ctx.drawImage(bulletImage,bullets[i].x,bullets[i].y,bullets[i].size,bullets[i].size);
         bullets[i].y -= bullets[i].speed;
     }
     for (let i = 0; i < enemies.length; i++) {
@@ -151,8 +155,12 @@ function render(){
         ctx.fillStyle = 'red';
         ctx.fillRect(enemies[i].x+7,enemies[i].y-10,50*(enemies[i].hp/100),5);
         if (enemies[i].y > canvas.height-64) {
-            gameover = true;
-            ctx.drawImage(gameOverImage,canvas.width/2 - 190, canvas.height/2 - 190, 380, 380);
+            spaceshipHp -= 10;
+            enemies.splice(i,1);
+            if (spaceshipHp <= 0) {
+                gameover = true;
+                ctx.drawImage(gameOverImage,canvas.width/2 - 190, canvas.height/2 - 190, 380, 380);
+            }
         }
         enemies[i].y += enemies[i].speed;
     }
