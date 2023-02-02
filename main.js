@@ -2,13 +2,14 @@ let canvas;
 let ctx;
 canvas = document.createElement('canvas');
 ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.innerWidth - 20;
+canvas.height = window.innerHeight - 20;
 document.body.appendChild(canvas);
 
 let backgroundImage,spaceshipImage,enemyImage,bulletImage,gameOverImage;
 let gameover = false;
 let score = 0;
+let money = 0;
 
 let spaceshipX = canvas.width/2 - 32;
 let spaceshipY = canvas.height - 64;
@@ -23,9 +24,13 @@ function Bullet(){
     this.checkCollision = function(){
         for (let i = 0; i < enemies.length; i++) {
             if (this.x+23 > enemies[i].x && this.x+11 < enemies[i].x + 64 && this.y > enemies[i].y && this.y < enemies[i].y + 64) {
-                enemies.splice(i,1);
+                enemies[i].hp -= 50;
                 bullets.splice(bullets.indexOf(this),1);
-                score += 10;
+                if (enemies[i].hp <= 0) {
+                    enemies.splice(i,1);
+                    score += 10;
+                    money += 1;
+                }
             }
         }
     }
@@ -44,6 +49,7 @@ function Enemy(){
     this.x = 0;
     this.y = 0;
     this.speed = 1;
+    this.hp = 100;
     this.init = function(){
         this.x = generateRandomValue(0,canvas.width - 64);
         this.y = 0;
@@ -133,6 +139,9 @@ function render(){
     }
     for (let i = 0; i < enemies.length; i++) {
         ctx.drawImage(enemyImage,enemies[i].x,enemies[i].y);
+        ctx.fillRect(enemies[i].x+7,enemies[i].y-10,50,5);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(enemies[i].x+7,enemies[i].y-10,50*(enemies[i].hp/100),5);
         if (enemies[i].y > canvas.height-64) {
             gameover = true;
             ctx.drawImage(gameOverImage,canvas.width/2 - 190, canvas.height/2 - 190, 380, 380);
