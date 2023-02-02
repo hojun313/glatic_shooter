@@ -48,12 +48,27 @@ function generateRandomValue(min,max){
     return rNum;
 }
 
+let enemy_bullets = [];
+function EnemyBullet(){
+    this.speed = 1;
+    this.damage = 50;
+    this.size = 32;
+    this.x = enemies[0].x + this.size/2;
+    this.y = enemies[0].y + 10;
+    enemy_bullets.push(this);
+}
+function createEnemyBullet() {
+    let enemyBullet = new EnemyBullet();
+}
+
 let enemies = [];
 function Enemy(){
     this.x = 0;
     this.y = 0;
-    this.speed = 1;
+    this.speed = 0.1;
     this.hp = 100;
+    this.damage = 10;
+    this.as = 120;
     this.init = function(){
         this.x = generateRandomValue(0,canvas.width - 64);
         this.y = 0;
@@ -84,9 +99,6 @@ let keysdown = {};
 function setupKeyboardListener(){
     document.addEventListener('keydown',function(e){
         keysdown[e.key] = true;
-        // if (e.key == ' ') {
-        //     astimer = 0;
-        // }
     });
     document.addEventListener('keyup',function(e){
         delete keysdown[e.key];
@@ -126,6 +138,13 @@ function update(){
     if (spaceshipY > canvas.height - 64) {
         spaceshipY = canvas.height - 64;
     }
+
+    for (let i = 0; i < enemies.length; i++) {
+        if (timer % enemies[0].as == 0) {
+            createEnemyBullet();
+        }
+    }
+
     for (let i = 0; i < bullets.length; i++) {
         if (bullets[i].y >= -32) {
             bullets[i].checkCollision();
@@ -148,6 +167,10 @@ function render(){
         ctx.drawImage(bulletImage,bullets[i].x,bullets[i].y,bullets[i].size,bullets[i].size);
         bullets[i].y -= bullets[i].speed;
     }
+    for (let i = 0; i < enemy_bullets.length; i++) {
+        ctx.drawImage(bulletImage,enemy_bullets[i].x,enemy_bullets[i].y,enemy_bullets[i].size,enemy_bullets[i].size);
+        enemy_bullets[i].y += 1;
+    }
     for (let i = 0; i < enemies.length; i++) {
         ctx.drawImage(enemyImage,enemies[i].x,enemies[i].y);
         ctx.fillStyle = 'white';
@@ -167,11 +190,13 @@ function render(){
 }
 
 astimer = spaceshipAs;
+timer = 0;
 function main(){
     if (!gameover) {
         update();
         render();
         astimer++;
+        timer++;
         requestAnimationFrame(main);
     }
 }
