@@ -13,6 +13,7 @@ let money = 0;
 
 let spaceshipX = canvas.width/2 - 32;
 let spaceshipY = canvas.height - 64;
+let spaceshipAs = 30;
 
 let bullets = [];
 function Bullet(){
@@ -20,11 +21,12 @@ function Bullet(){
     this.y = spaceshipY - 10;
     bullets.push(this);
     this.speed = 5;
+    this.damage = 50;
 
     this.checkCollision = function(){
         for (let i = 0; i < enemies.length; i++) {
             if (this.x+23 > enemies[i].x && this.x+11 < enemies[i].x + 64 && this.y > enemies[i].y && this.y < enemies[i].y + 64) {
-                enemies[i].hp -= 50;
+                enemies[i].hp -= this.damage;
                 bullets.splice(bullets.indexOf(this),1);
                 if (enemies[i].hp <= 0) {
                     enemies.splice(i,1);
@@ -80,13 +82,12 @@ let keysdown = {};
 function setupKeyboardListener(){
     document.addEventListener('keydown',function(e){
         keysdown[e.key] = true;
-        console.log(keysdown);
+        // if (e.key == ' ') {
+        //     astimer = 0;
+        // }
     });
     document.addEventListener('keyup',function(e){
         delete keysdown[e.key];
-        if (e.key == ' ') {
-            createBullet();
-        }
     });
 }
 
@@ -102,6 +103,13 @@ function update(){
     }
     if('ArrowDown' in keysdown){
         spaceshipY += 5;
+    }
+    if(" " in keysdown){
+        console.log(astimer);
+        if (astimer >= spaceshipAs){
+            createBullet();
+            astimer = 0;
+        }
     }
 
     if (spaceshipX < 0) {
@@ -124,7 +132,6 @@ function update(){
             bullets.splice(i,1);
         }
     }
-    console.log(bullets);
 }
 
 function render(){
@@ -139,6 +146,7 @@ function render(){
     }
     for (let i = 0; i < enemies.length; i++) {
         ctx.drawImage(enemyImage,enemies[i].x,enemies[i].y);
+        ctx.fillStyle = 'white';
         ctx.fillRect(enemies[i].x+7,enemies[i].y-10,50,5);
         ctx.fillStyle = 'red';
         ctx.fillRect(enemies[i].x+7,enemies[i].y-10,50*(enemies[i].hp/100),5);
@@ -150,10 +158,12 @@ function render(){
     }
 }
 
+astimer = spaceshipAs;
 function main(){
     if (!gameover) {
         update();
         render();
+        astimer++;
         requestAnimationFrame(main);
     }
 }
