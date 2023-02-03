@@ -49,16 +49,16 @@ function generateRandomValue(min,max){
 }
 
 let enemy_bullets = [];
-function EnemyBullet(){
+function EnemyBullet(num){
     this.speed = 1;
     this.damage = 50;
     this.size = 32;
-    this.x = enemies[0].x + this.size/2;
-    this.y = enemies[0].y + 10;
-    enemy_bullets.push(this);
+    this.x = enemies[num].x + this.size/2;
+    this.y = enemies[num].y + 10;
+    enemy_bullets[num].push(this);
 }
-function createEnemyBullet() {
-    let enemyBullet = new EnemyBullet();
+function createEnemyBullet(num) {
+    let enemyBullet = new EnemyBullet(num);
 }
 
 let enemies = [];
@@ -68,11 +68,12 @@ function Enemy(){
     this.speed = 0.1;
     this.hp = 100;
     this.damage = 10;
-    this.as = 120;
+    this.as = 1200;
     this.init = function(){
         this.x = generateRandomValue(0,canvas.width - 64);
         this.y = 0;
         enemies.push(this);
+        enemy_bullets.push([]);
     }
 }
 function createEnemy(){
@@ -126,6 +127,8 @@ function update(){
         }
     }
 
+    console.log(enemy_bullets);
+
     if (spaceshipX < 0) {
         spaceshipX = 0;
     }
@@ -140,8 +143,8 @@ function update(){
     }
 
     for (let i = 0; i < enemies.length; i++) {
-        if (timer % enemies[0].as == 0) {
-            createEnemyBullet();
+        if (timer % enemies[i].as == 0) {
+            createEnemyBullet(i);
         }
     }
 
@@ -168,8 +171,10 @@ function render(){
         bullets[i].y -= bullets[i].speed;
     }
     for (let i = 0; i < enemy_bullets.length; i++) {
-        ctx.drawImage(bulletImage,enemy_bullets[i].x,enemy_bullets[i].y,enemy_bullets[i].size,enemy_bullets[i].size);
-        enemy_bullets[i].y += 1;
+        for (let j = 0; j < enemy_bullets[i].length; j++) {
+            ctx.drawImage(bulletImage,enemy_bullets[i][j].x,enemy_bullets[i][j].y,enemy_bullets[i][j].size,enemy_bullets[i][j].size);
+            enemy_bullets[i][j].y += enemy_bullets[i][j].speed;
+        }
     }
     for (let i = 0; i < enemies.length; i++) {
         ctx.drawImage(enemyImage,enemies[i].x,enemies[i].y);
