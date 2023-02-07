@@ -80,7 +80,7 @@ function createEnemy(){
     const interval = setInterval(function(){
         let enemy = new Enemy();
         enemy.init();
-    },1000);
+    },5000);
 }
 
 function loadImage(){
@@ -191,6 +191,15 @@ function render(){
             }
         }
         enemies[i].y += enemies[i].speed;
+        if (enemies[i].x <= 0) {
+            enemies[i].x = canvas.width - 65;
+        }
+        else if (enemies[i].x >= canvas.width - 64) {
+            enemies[i].x = 1;
+        }
+        else{
+            enemies[i].x += Math.sin(enemies[i].y/100)*2;
+        }
     }
 }
 
