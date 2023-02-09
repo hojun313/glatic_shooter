@@ -92,6 +92,8 @@ function loadImage(){
     enemyImage.src = 'images/enemyred.png';
     bulletImage = new Image();
     bulletImage.src = 'images/bullet.png';
+    enemybulletImage = new Image();
+    enemybulletImage.src = 'images/laser.png';
     gameOverImage = new Image();
     gameOverImage.src = 'images/gameover.png';
 }
@@ -172,7 +174,7 @@ function render(){
     }
     for (let i = 0; i < enemy_bullets.length; i++) {
         for (let j = 0; j < enemy_bullets[i].length; j++) {
-            ctx.drawImage(bulletImage,enemy_bullets[i][j].x,enemy_bullets[i][j].y,enemy_bullets[i][j].size,enemy_bullets[i][j].size);
+            ctx.drawImage(enemybulletImage,enemy_bullets[i][j].x,enemy_bullets[i][j].y,enemy_bullets[i][j].size,enemy_bullets[i][j].size);
             enemy_bullets[i][j].y += enemy_bullets[i][j].speed;
         }
     }
@@ -198,7 +200,7 @@ function render(){
             enemies[i].x = 1;
         }
         else{
-            enemies[i].x += Math.sin(enemies[i].y/100)*2;
+            enemies[i].x += Math.sin(enemies[i].y/10)*2;
         }
     }
 }
