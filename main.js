@@ -56,6 +56,16 @@ function EnemyBullet(num){
     this.x = enemies[num].x + this.size/2;
     this.y = enemies[num].y + 10;
     enemy_bullets[num].push(this);
+
+    this.checkCollision = function(){
+        if (this.x+(23/32)*this.size > spaceshipX && this.x+(11/32)*this.size < spaceshipX + 64 && this.y+64 > spaceshipY && this.y+64 < spaceshipY + 64) {
+            spaceshipHp -= this.damage;
+            enemy_bullets[num].splice(enemy_bullets[num].indexOf(this),1);
+            if (spaceshipHp <= 0) {
+                gameover = true;
+            }
+        }
+    }
 }
 function createEnemyBullet(num) {
     let enemyBullet = new EnemyBullet(num);
@@ -158,6 +168,18 @@ function update(){
             bullets.splice(i,1);
         }
     }
+
+    for (let i = 0; i < enemy_bullets.length; i++) {
+        for (let j = 0; j < enemy_bullets[i].length; j++) {
+            if (enemy_bullets[i][j].y <= canvas.height) {
+                enemy_bullets[i][j].checkCollision();
+            }
+            else{
+                enemy_bullets[i].splice(j,1);
+            }
+        }
+    }
+
 }
 
 function render(){
@@ -185,12 +207,7 @@ function render(){
         ctx.fillStyle = 'red';
         ctx.fillRect(enemies[i].x+7,enemies[i].y-10,50*(enemies[i].hp/100),5);
         if (enemies[i].y > canvas.height-64) {
-            spaceshipHp -= 10;
             enemies.splice(i,1);
-            if (spaceshipHp <= 0) {
-                gameover = true;
-                ctx.drawImage(gameOverImage,canvas.width/2 - 190, canvas.height/2 - 190, 380, 380);
-            }
         }
         enemies[i].y += enemies[i].speed;
         if (enemies[i].x <= 0) {
@@ -202,6 +219,9 @@ function render(){
         else{
             enemies[i].x += Math.sin(enemies[i].y/10)*2;
         }
+    }
+    if (gameover) {
+        ctx.drawImage(gameOverImage,0,0,canvas.width,canvas.he);
     }
 }
 
