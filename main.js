@@ -58,7 +58,7 @@ function EnemyBullet(num){
     enemy_bullets[num].push(this);
 
     this.checkCollision = function(){
-        if (this.x+(23/32)*this.size > spaceshipX && this.x+(11/32)*this.size < spaceshipX + 64 && this.y+64 > spaceshipY && this.y+64 < spaceshipY + 64) {
+        if (this.x+(25/64)*this.size > spaceshipX && this.x+(7/64)*this.size < spaceshipX + 64 && this.y+this.size > spaceshipY && this.y < spaceshipY + 64) {
             spaceshipHp -= this.damage;
             enemy_bullets[num].splice(enemy_bullets[num].indexOf(this),1);
             if (spaceshipHp <= 0) {
